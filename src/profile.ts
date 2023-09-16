@@ -8,6 +8,14 @@ enum Profile {
   Organization = '.avatar-group-item',
   Sponsor = '#sponsors-section-list > div',
   Contributions = '.js-yearly-contributions',
+  Pinned = '.js-pinned-items-reorder-form ol .pinned-item-list-item-content',
+}
+
+interface Pinned {
+  title: string
+  desc: string
+  language: string
+  star: string
 }
 
 interface Contributions {
@@ -25,8 +33,8 @@ type NormalObj = Record<string, string>
   get the profile infomation
 */
 export async function profileInfo(user: string) {
-  // const $ = await initCheerio(`http://127.0.0.1:5500/${user}.html`)
-  const $ = await initCheerio(`https://github.com/${user}`)
+  const $ = await initCheerio(`http://127.0.0.1:5500/${user}.html`)
+  // const $ = await initCheerio(`https://github.com/${user}`)
   const bio = $(Profile.Bio).text()
   // TODO: we can make every field into a function
   // follow: {
@@ -124,9 +132,44 @@ export async function profileInfo(user: string) {
       return parseDate(a.date, b.date)
     })
   })
+
+  const pinned: Pinned[] = []
+  $(Profile.Pinned).each((_i, rootEl) => {
+    const pin: Pinned = {
+      title: '',
+      desc: '',
+      language: '',
+      star: '',
+    }
+    $(rootEl)
+      .find('.pinned-item-desc')
+      .each((_i, el) => {
+        pin.desc = $(el).text().replace(/\n/g, '').trim()
+      })
+    $(rootEl)
+      .find('.wb-break-word')
+      .each((_i, el) => {
+        pin.title = $(el).text().trim()
+      })
+    $(rootEl)
+      .find('span')
+      .attr('itemprop', 'programmingLanguage')
+      .each((_i, el) => {
+        pin.language = $(el).text()
+      })
+    $(rootEl)
+      .find('.pinned-item-meta')
+      .each((_i, el) => {
+        pin.star =
+          $(el)
+            .text()
+            .replace(/[\s\n]/g, '') || '0'
+      })
+    pinned.push(pin)
+  })
   /*
     More filed to do:
-    TODO: sponsorging, pinned, activity, repositories, language-use
+    TODO: sponsorging, activity, repositories, language-use
     TODO: stars, stars-list, hightlights
   */
   return {
@@ -136,6 +179,7 @@ export async function profileInfo(user: string) {
     details,
     organizations,
     contributions,
+    pinned,
   }
 }
 
@@ -178,7 +222,8 @@ export async function sponsorInfo(user: string) {
   }
 }
 
-// void profileInfo('Plumbiu').then((data) => {
-//   writeFileSync('./Plumbiu.json', JSON.stringify(data))
-//   console.log(data)
-// })
+void profileInfo('Plumbiu').then(async (data) => {
+  const { writeFileSync } = await import('node:fs')
+  writeFileSync('./Plumbiu.json', JSON.stringify(data))
+  console.log(data)
+})
