@@ -33,8 +33,8 @@ type NormalObj = Record<string, string>
   get the profile infomation
 */
 export async function profileInfo(user: string) {
-  const $ = await initCheerio(`http://127.0.0.1:5500/${user}.html`)
-  // const $ = await initCheerio(`https://github.com/${user}`)
+  // const $ = await initCheerio(`http://127.0.0.1:5500/${user}.html`)
+  const $ = await initCheerio(`https://github.com/${user}`)
   const bio = $(Profile.Bio).text()
   // TODO: we can make every field into a function
   // follow: {
@@ -222,8 +222,8 @@ export async function sponsorInfo(user: string) {
   }
 }
 
-void profileInfo('Plumbiu').then(async (data) => {
-  const { writeFileSync } = await import('node:fs')
-  writeFileSync('./Plumbiu.json', JSON.stringify(data))
-  console.log(data)
-})
+// void profileInfo('Plumbiu').then(async (data) => {
+//   const { writeFileSync } = await import('node:fs')
+//   writeFileSync('./Plumbiu.json', JSON.stringify(data))
+//   console.log(data)
+// })
