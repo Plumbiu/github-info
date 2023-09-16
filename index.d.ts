@@ -4,4 +4,6 @@ declare function profileInfo(user: string): Promise<{
   sponsor: Sponsor
   details: NormalObj
   organizations: NormalObj
+  contributions: Contributions
+  pinned: Pinned[]
 }>
