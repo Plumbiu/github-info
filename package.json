@@ -31,7 +31,6 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
     "eslint-plugin-promise": "^6.0.0",
-    "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "prettier": "3.0.3",
     "simple-git-hooks": "^2.9.0",
@@ -42,8 +41,7 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "**/*": [
-      "eslint",
+    "**/*.ts": [
       "prettier --write --ignore-unknown"
     ]
   },
