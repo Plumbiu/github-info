@@ -8,7 +8,7 @@
     "index.d.ts"
   ],
   "scripts": {
-    "prepare": "husky install",
+    "postinstall": "simple-git-hooks",
     "build": "ts-node scripts/build.ts"
   },
   "exports": {
