@@ -1,13 +1,11 @@
 import type { Repo, Star, Event, BaseField, Follow } from '../types.js'
 import { Octokit } from 'octokit'
 import { fieldRequest } from '../utils.js'
-import { writeFileSync } from 'fs'
 
 // for cherrio
 export async function initFields(username: string) {
   const octokit = new Octokit()
   const { data } = await octokit.request(`GET /users/${username}`)
-  writeFileSync('./data.json', JSON.stringify(data))
   return {
     baseField() {
       return data as BaseField
