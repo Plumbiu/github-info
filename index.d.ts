@@ -73,10 +73,7 @@ declare module '@plumbiu/github-info' {
         name: string
         avatar: string
       }
-      repo: {
-        name: string
-        url: string
-      }
+      repo: string
       payload: {
         ref: string
         commits: Array<{

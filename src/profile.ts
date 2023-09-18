@@ -62,8 +62,8 @@ export async function profileInfo(username: string) {
   }
 }
 
-// void profileInfo('Plumbiu').then(async (data) => {
-//   const { writeFileSync } = await import('node:fs')
-//   writeFileSync('./Plumbiu.json', JSON.stringify(data))
-//   console.log(typeof data)
-// })
+void profileInfo('Plumbiu').then(async (data) => {
+  const { writeFileSync } = await import('node:fs')
+  writeFileSync('./Plumbiu.json', JSON.stringify(data))
+  console.log(typeof data)
+})
