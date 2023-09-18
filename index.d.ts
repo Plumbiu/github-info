@@ -136,4 +136,6 @@ interface ReturnedType {
   }
 }
 
-declare function profileInfo(username: stirng): ReturnedType
+declare module '@plumbiu/github-info' {
+  export function profileInfo(username: stirng): ReturnedType
+}
