@@ -11,7 +11,7 @@ export interface ProfileInfo {
   pinned?: Pinned[]
 }
 
-export type Options = Record<keyof ProfileInfo, boolean>
+export type Options = Partial<Record<keyof ProfileInfo, boolean>>
 
 /*
   get the profile infomation
@@ -21,11 +21,11 @@ export async function profileInfo(
   options: Options = {
     bio: true,
     follow: true,
-    sponsor: true,
+    sponsor: false,
     details: true,
     organizations: true,
-    contributions: false,
-    pinned: false,
+    contributions: true,
+    pinned: true,
   },
 ): Promise<ProfileInfo> {
   const {

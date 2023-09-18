@@ -13,7 +13,15 @@ npm install @plumbiu/github-info
 ```js
 import { profileInfo } from '@plumbiu/github-info'
 
-const profile = await profileInfo('Plumbiu')
+const profile = await profileInfo('Plumbiu', {
+  bio: true,
+  follow: true,
+  details: true,
+  organizations: true,
+  // sponsor: true
+  // contributions: true
+  // pinned: true
+})
 /*
   {
     bio: 'Studprogrammeried at Hangzhou Dianzi University (杭州电子科技大学) (HDU)，a front-end coder',

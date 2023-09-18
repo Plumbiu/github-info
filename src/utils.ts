@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio'
+import fetch from 'node-fetch'
 
 /*
   init cheerio instance by using url

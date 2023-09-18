@@ -4,7 +4,6 @@ import { initCheerio, parseDate } from '../utils.js'
 
 export async function initFields(username: string) {
   const $ = await initCheerio(`https://github.com/${username}`)
-  // const $ = await initCheerio(`http://127.0.0.1:5500/${username}.html`)
   return {
     bioField() {
       return $(Profile.Bio).text()
