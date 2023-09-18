@@ -1,34 +1,113 @@
-export type NormalObj = Record<string, string>
+export type Follow = Record<'id' | 'login' | 'avatar_url', string>
 
-export interface Sponsor {
-  current: NormalObj
-  past: NormalObj
+type Owner = Record<'login' | 'avatar_url', string>
+type License = Record<'name', string>
+
+export type BaseField = Record<
+  | 'login'
+  | 'id'
+  | 'node_id'
+  | 'avatar_url'
+  | 'gravatar_id'
+  | 'url'
+  | 'html_url'
+  | 'followers_url'
+  | 'following_url'
+  | 'gists_url'
+  | 'starred_url'
+  | 'subscriptions_url'
+  | 'organizations_url'
+  | 'repos_url'
+  | 'events_url'
+  | 'received_events_url'
+  | 'type'
+  | 'site_admin'
+  | 'name'
+  | 'company'
+  | 'blog'
+  | 'location'
+  | 'email'
+  | 'hireable'
+  | 'bio'
+  | 'twitter_username'
+  | 'public_repos'
+  | 'public_gists'
+  | 'followers'
+  | 'following'
+  | 'created_at'
+  | 'updated_at',
+  string
+>
+
+export type Star = Record<
+  | 'id'
+  | 'name'
+  | 'full_name'
+  | 'html_url'
+  | 'description'
+  | 'language'
+  | 'stargazers_count'
+  | 'watchers'
+  | 'forks'
+  | 'open_issues'
+  | 'license'
+  | 'created_at'
+  | 'updated_at'
+  | 'pushed_at',
+  string
+> & {
+  license: License
+  owner: Owner
 }
 
-export interface Contributions {
-  amount: string
-  full: Array<{
-    date: string
-    level: string
-    count: string
-  }>
-  org: string[]
+export type Repo = Star
+
+type Org = Record<'login' | 'url' | 'avatar_url', string>
+type Actor = Record<'login' | 'avatar_url', string>
+type BaseRepo = Record<'name' | 'url', string>
+type PrUser = Record<'login' | 'avatar_url' | 'html_url', string>
+type PrHeadorBase = Record<'label' | 'ref' | 'html_url', string> & {
+  user: PrUser
+  repo: Repo
+}
+type Pr = Record<
+  | 'html_url'
+  | 'diff_url'
+  | 'patch_url'
+  | 'issue_url'
+  | 'state'
+  | 'locked'
+  | 'title'
+  | 'created_at'
+  | 'updated_at'
+  | 'closed_at'
+  | 'merged_at'
+  | 'comments'
+  | 'additions'
+  | 'deletions'
+  | 'changed_files'
+  | 'body',
+  string
+> & {
+  user: PrUser
+  head: PrHeadorBase
+  base: PrHeadorBase
+  merged_by: {
+    login: string
+  }
 }
 
-export interface Pinned {
-  title: string
-  desc: string
-  language: string
-  star: string
+interface Payload {
+  ref: string
+  pull_request?: Pr
+  commits: Commit[]
 }
 
-// TODO: try find a better way to get the profile infomation
-export enum Profile {
-  Bio = '.user-profile-bio > div',
-  Follow = '.js-profile-editable-area a .color-fg-default',
-  Details = '.vcard-detail',
-  Organization = '.avatar-group-item',
-  Sponsor = '#sponsors-section-list > div',
-  Contributions = '.js-yearly-contributions',
-  Pinned = '.js-pinned-items-reorder-form ol .pinned-item-list-item-content',
+type Commit = Record<'author' | 'message' | 'url', string>
+
+export type Event = Record<'id' | 'type' | 'created_at', string> & {
+  org: Org
+  actor: Actor
+  payload: Payload
+  repo: BaseRepo
 }

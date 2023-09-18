@@ -1,185 +1,175 @@
-import type { Contributions, NormalObj, Pinned, Sponsor } from '../types.js'
-import { Profile } from '../types.js'
-import { initCheerio, parseDate } from '../utils.js'
+import type { Repo, Star, Event, BaseField, Follow } from '../types.js'
+import { Octokit } from 'octokit'
+import { fieldRequest } from '../utils.js'
+import { writeFileSync } from 'fs'
 
+// for cherrio
 export async function initFields(username: string) {
-  const $ = await initCheerio(`https://github.com/${username}`)
+  const octokit = new Octokit()
+  const { data } = await octokit.request(`GET /users/${username}`)
+  writeFileSync('./data.json', JSON.stringify(data))
   return {
-    bioField() {
-      return $(Profile.Bio).text()
+    baseField() {
+      return data as BaseField
     },
-    followField() {
-      // follow: {
-      //   followers: '2.9k',
-      //   floowing: '175'
-      // }
-      const follow: NormalObj = {}
-      $(Profile.Follow).each((i, el) => {
-        /*
-          github profile page doesn't distinguish the followers and following field,
-          so we use Index to indicate, may be we should find a better way.
-        */
-        const key = i === 0 ? 'followers' : 'following'
-        follow[key] = $(el).text().replace(/\s|\n/g, '')
-      })
-      return follow
+    async followersField() {
+      const { followers_url } = data
+      const followers = await fieldRequest<Follow[]>(followers_url)
+      return followers?.map((item) => ({
+        id: item.id,
+        user: item.login,
+        avatar: item.avatar_url,
+      }))
     },
-    detailsField() {
-      // details: {
-      //   homeLocation: 'Hangzhou,China',
-      //   url: 'https://blog.plumbiu.club'
-      //   ...
-      // }
-      const details: NormalObj = {}
-      $(Profile.Details).each((_i, el) => {
-        const key = $(el).attr('itemprop') as string
-        details[key] = $(el).text().replace(/\s|\n/g, '')
-      })
-      return details
+    async followingField() {
+      // const { following_url } = data
+      const following = await fieldRequest<Follow[]>(
+        `https://api.github.com/users/${username}/following`,
+      )
+      return following?.map((item) => ({
+        id: item.id,
+        user: item.login,
+        avatar: item.avatar_url,
+      }))
     },
-    organizationsField() {
-      // organizations: {
-      //   vuejs: 'https://github.com/vuejs',
-      //   vitejs: 'https://github.com/vitejs',
-      //   ...
-      // }
-      const organizations: NormalObj = {}
-      $(Profile.Organization).each((_i, el) => {
-        const key = $(el).attr('aria-label') as string
-        organizations[key] = `https://github.com${$(el).attr('href')}`
-      })
-      return organizations
-    },
-    async sponsorField() {
-      /*
-        It is difficlut to to get the sponfor infomation in the profile page
-        as the class name in the label is duplicated
-        and past sponsor will not show in the profile page.
-      */
-      // sponsor: {
-      //   current: {
-      //     '@wey-gu': 'https://avatars.githubusercontent.com/u/1651790?s=60&v=4',
-      //     '@sodatea': 'https://avatars.githubusercontent.com/u/3277634?s=60&v=4',
-      //      ...
-      //   },
-      //   past: {
-      //     '@element-plus': 'https://avatars.githubusercontent.com/u/68583457?s=60&v=4',
-      //     '@kallydev': 'https://avatars.githubusercontent.com/u/36319157?s=60&v=4'
-      //      ...
-      //   }
-      // },
-      const sponsor: Sponsor = {
-        current: {},
-        past: {},
-      }
-      try {
-        const $ = await initCheerio(`https://github.com/sponsors/${username}`)
-        $(Profile.Sponsor).each((i, rootEl) => {
-          $(rootEl)
-            .find('img')
-            .each((_i, el) => {
-              /*
-              As the `follow` field,
-              current and past sponsor doesn't indicated by the sponsor page
-            */
-              const prefix = i === 0 ? 'current' : 'past'
-              const key = $(el).attr('alt')!
-              sponsor[prefix][key] = $(el).attr('src')!
-            })
-        })
-      } finally {
-        // eslint-disable-next-line no-unsafe-finally
-        return sponsor
-      }
-    },
-    contributionsField() {
-      // contributions: {
-      //   amount: '2499',
-      //   full: [
-      //     { date: '2022-9-11', level: '1', count: '5' },
-      //     { date: '2022-9-11', level: '1', count: '5' },
-      //     ...
-      //   ]
-      // }
-      const contributions: Contributions = {
-        amount: '0',
-        full: [],
-        org: [],
-      }
-      $(Profile.Contributions).each((_i, rootEl) => {
-        // contributions amount
-        contributions.amount = /[\d,]+/
-          .exec($(rootEl).find('h2').text())![0]
-          .replace('', '')
-        // date contributions information
-        $(rootEl)
-          .find('td')
-          .each((_i, el) => {
-            const elm = $(el)
-            const date = elm.attr('data-date')
-            const level = elm.attr('data-level') ?? '0'
-            let count = elm.text().split(' ')[0]
-            if (!Number(count)) {
-              count = '0'
-            }
-            if (date) {
-              contributions.full.push({
-                date,
-                level,
-                count,
-              })
-            }
-          })
-        $(rootEl)
-          .find('.js-org-filter-link')
-          .each((_i, el) => {
-            const text = $(el).text()
-            if (text) {
-              contributions.org.push(text.trim())
-            }
-          })
-        contributions.full.sort((a, b) => {
-          return parseDate(a.date, b.date)
-        })
-      })
-      return contributions
-    },
-    pinnedField() {
-      const pinned: Pinned[] = []
-      $(Profile.Pinned).each((_i, rootEl) => {
-        const pin: Pinned = {
-          title: '',
-          desc: '',
-          language: '',
-          star: '',
+    async starredField() {
+      // const { starred_url } = data
+      const starred = await fieldRequest<Star[]>(
+        `https://api.github.com/users/${username}/starred`,
+      )
+      return starred?.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          fullName: item.full_name,
+          url: item.html_url,
+          description: item.description,
+          language: item.language,
+          star: item.stargazers_count,
+          watchers: item.watchers,
+          forks: item.forks,
+          issue: item.open_issues,
+          license: item.license?.name,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          pushed_at: item.pushed_at,
+          owner: {
+            user: item.owner?.login,
+            avatar: item.owner?.avatar_url,
+          },
         }
-        $(rootEl)
-          .find('.pinned-item-desc')
-          .each((_i, el) => {
-            pin.desc = $(el).text().replace(/\n/g, '').trim()
-          })
-        $(rootEl)
-          .find('.wb-break-word')
-          .each((_i, el) => {
-            pin.title = $(el).text().trim()
-          })
-        $(rootEl)
-          .find('span')
-          .attr('itemprop', 'programmingLanguage')
-          .each((_i, el) => {
-            pin.language = $(el).text()
-          })
-        $(rootEl)
-          .find('.pinned-item-meta')
-          .each((_i, el) => {
-            pin.star =
-              $(el)
-                .text()
-                .replace(/[\s\n]/g, '') || '0'
-          })
-        pinned.push(pin)
       })
-      return pinned
+    },
+    async reposField() {
+      const { repos_url } = data
+      const repos = await fieldRequest<Repo[]>(repos_url)
+      return repos?.map((item) => ({
+        id: item.id,
+        name: item.name,
+        fullName: item.full_name,
+        url: item.html_url,
+        description: item.description,
+        languate: item.language,
+        star: item.stargazers_count,
+        wathers: item.watchers,
+        forks: item.forks,
+        issue: item.open_issues,
+        license: item.license?.name,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        pushed_at: item.pushed_at,
+        owner: {
+          user: item.owner?.login,
+          avatar: item.owner?.avatar_url,
+        },
+      }))
+    },
+    async eventsField() {
+      // const { events_url } = data
+      const events = await fieldRequest<Event[]>(
+        `https://api.github.com/users/${username}/events`,
+      )
+      return events?.map((item) => {
+        const pr = item.payload?.pull_request
+        const result = {
+          id: item.id,
+          type: item.type,
+          created_at: item.created_at,
+          org: {
+            name: item.org?.login,
+            url: item.org?.url,
+            avatar: item.org?.avatar_url,
+          },
+          actor: {
+            name: item.actor?.login,
+            avatar: item.actor?.avatar_url,
+          },
+          repo: {
+            name: item.repo.name,
+            url: item.repo.url,
+          },
+          payload: {
+            ref: item.payload.ref,
+            commits: item.payload.commits?.map((commit) => ({
+              author: commit.author,
+              message: commit.message,
+              url: commit.url,
+            })),
+          },
+        }
+        if (pr) {
+          ;(result as any).pull_request = {
+            html_url: pr.html_url,
+            diff_url: pr.diff_url,
+            patch_url: pr.patch_url,
+            issue_url: pr.issue_url,
+            state: pr.state,
+            locked: pr.locked,
+            title: pr.title,
+            body: pr.body,
+            created_at: pr.created_at,
+            updated_at: pr.updated_at,
+            closed_at: pr.closed_at,
+            merged_at: pr.merged_at,
+            merged_by: pr.merged_by?.login,
+            comments: pr.comments,
+            additions: pr.additions,
+            deletions: pr.deletions,
+            changed_files: pr.changed_files,
+            user: {
+              name: pr.user?.login,
+              avatar: pr.user?.avatar_url,
+              url: pr.user?.html_url,
+            },
+            head: {
+              label: pr.head?.label,
+              ref: pr.head?.ref,
+              user: {
+                name: pr.head?.user?.login,
+                avatar: pr.head?.user?.avatar_url,
+                url: pr.head?.user?.html_url,
+              },
+              repo: {
+                name: pr.head?.repo?.name,
+                fullName: pr.head?.repo?.full_name,
+                description: pr.head?.repo?.description,
+                language: pr.head?.repo?.language,
+                license: pr.head?.repo?.license.name,
+              },
+            },
+            base: {
+              label: pr.base?.label,
+              ref: pr.base?.ref,
+              user: {
+                name: pr.base?.user?.login,
+                avatar: pr.base?.user?.avatar_url,
+                url: pr.base?.user?.html_url,
+              },
+            },
+          }
+        }
+        return result
+      })
     },
   }
 }

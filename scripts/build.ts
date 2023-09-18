@@ -6,7 +6,6 @@ buildSync({
   format: 'esm',
   minify: true,
   sourcemap: true,
-  platform: 'node',
   treeShaking: true,
   bundle: true,
 })
