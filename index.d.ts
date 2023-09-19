@@ -55,31 +55,40 @@ declare module '@plumbiu/github-info' {
   type PullRequestBase = Record<'label' | 'ref', string | undefined> & {
     user: PullRequestUser
   }
+  type Event = EventBase & {
+    org: AvatarName & {
+      url: string
+    }
+    actor: AvatarName
+    payload: {
+      ref: string
+      commits: Commit[]
+    }
+    pull_request?: PullRequestBase & {
+      user: PullRequestUser
+      head: PullRequestBase & {
+        repo: Record<
+          'name' | 'fullName' | 'description' | 'language' | 'license',
+          string | undefined
+        >
+      }
+      base: PullRequestBase
+    }
+  }
   type ReturnedType = User & {
     public_repos: PublicRepos[]
     followers: Follow[]
     following: Follow[]
     starred: PublicRepos[]
-    events: EventBase & {
-      org: AvatarName & {
-        url: string
-      }
-      actor: AvatarName
-      payload: {
-        ref: string
-        commits: Commit[]
-      }
-      pull_request?: PullRequestBase & {
-        user: PullRequestUser
-        head: PullRequestBase & {
-          repo: Record<
-            'name' | 'fullName' | 'description' | 'language' | 'license',
-            string | undefined
-          >
-        }
-        base: PullRequestBase
-      }
-    }
+    events: Event[]
   }
   export async function profileInfo(username: stirng): Promise<ReturnedType>
+  export async function initFields(username: string): Promise<{
+    userField: () => Promise<User>
+    followersField: () => Promise<Follow[]>
+    followingField: () => Promise<Follow[]>
+    starredField: () => Promise<PublicRepos[]>
+    reposField: () => Promise<PublicRepos[]>
+    eventsField: () => Promise<Event[]>
+  }>
 }
