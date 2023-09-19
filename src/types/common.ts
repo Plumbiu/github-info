@@ -1,6 +1,5 @@
 export type Owner = Record<
   | 'login'
-  | 'id'
   | 'node_id'
   | 'avatar_url'
   | 'gravatar_id'
@@ -18,7 +17,9 @@ export type Owner = Record<
   | 'type'
   | 'site_admin',
   string
->
+> & {
+  id: number
+}
 
 export type License = Record<
   'key' | 'name' | 'spdx_id' | 'url' | 'node_id',
@@ -30,28 +31,4 @@ export type Org = Record<
   string
 > & {
   id: number
-}
-
-export type User = Record<
-  | 'gravatar_id'
-  | 'login'
-  | 'node_id'
-  | 'avatar_url'
-  | 'gravatar_id'
-  | 'url'
-  | 'html_url'
-  | 'followers_url'
-  | 'following_url'
-  | 'gists_url'
-  | 'starred_url'
-  | 'subscriptions_url'
-  | 'organizations_url'
-  | 'repos_url'
-  | 'events_url'
-  | 'received_events_url'
-  | 'type',
-  string
-> & {
-  id: number
-  site_admin: boolean
 }

@@ -2,25 +2,7 @@ import type { License, Org, Owner } from './common.js'
 
 export type Follow = Record<'id' | 'login' | 'avatar_url', string>
 
-export type BaseField = Record<
-  | 'login'
-  | 'id'
-  | 'node_id'
-  | 'avatar_url'
-  | 'gravatar_id'
-  | 'url'
-  | 'html_url'
-  | 'followers_url'
-  | 'following_url'
-  | 'gists_url'
-  | 'starred_url'
-  | 'subscriptions_url'
-  | 'organizations_url'
-  | 'repos_url'
-  | 'events_url'
-  | 'received_events_url'
-  | 'type'
-  | 'site_admin'
+export type BaseField = Owner & Record<
   | 'name'
   | 'company'
   | 'blog'
