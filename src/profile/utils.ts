@@ -37,7 +37,7 @@ interface User {
 }
 
 function destructUser(user: User) {
-  const { name, avatar, html_url: url } = user
+  const { login: name, avatar_url: avatar, html_url: url } = user
   return {
     name,
     avatar,

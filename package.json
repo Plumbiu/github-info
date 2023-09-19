@@ -1,6 +1,6 @@
 {
   "name": "@plumbiu/github-info",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Get the github profile information!",
   "type": "module",
   "files": [
