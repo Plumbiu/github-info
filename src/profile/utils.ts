@@ -1,4 +1,4 @@
-import type { Repo, Star } from './types/index.js'
+import type { Repo, Star } from '../types/index.js'
 
 export async function fieldRequest<T>(url: string): Promise<T> {
   const raw = await fetch(url)
@@ -47,8 +47,8 @@ function destructUser(user: User) {
 
 export function destructPullRequest(pr: any) {
   const { merged_by, user, head, base } = pr
-
   const repo = head.repo
+
   return {
     html_url: pr.html_url,
     diff_url: pr.diff_url,

@@ -1,11 +1,11 @@
-import { initFields } from './fields/index.js'
+import { initFields } from './fields.js'
 
 /*
   get the profile infomation
 */
 export async function profileInfo(username: string) {
   const {
-    baseField,
+    userField: baseField,
     followersField,
     followingField,
     starredField,
@@ -24,20 +24,16 @@ export async function profileInfo(username: string) {
     twitter_username: twitter,
     created_at,
     updated_at,
-  } = baseField()
+  } = await baseField()
 
   const followers = await followersField()
   const following = await followingField()
   const starred = await starredField()
   const repos = await reposField()
   const events = await eventsField()
-  // const organizations = organizationsField()
-  // const sponsor = await sponsorField()
-  // const contributions = contributionsField()
-  // const pinned = pinnedField()
   /*
     More filed to do:
-    TODO: sponsorging, language-use
+    TODO: sponsor, organizations,contributions,pinned
   */
   return {
     name,
@@ -46,19 +42,15 @@ export async function profileInfo(username: string) {
     blog,
     location,
     email,
-    public_repos: repos,
-    followers,
-    following,
     avatar,
-    starred,
     created_at,
     updated_at,
     twitter,
-    // sponsor,
+    public_repos: repos,
+    followers,
+    following,
+    starred,
     events,
-    // organizations,
-    // contributions,
-    // pinned,
   }
 }
 

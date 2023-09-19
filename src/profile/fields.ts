@@ -1,18 +1,23 @@
 import type { Repo, Star, Event, BaseField, Follow } from '../types/index.js'
-import { Octokit } from 'octokit'
-import { destructPullRequest, destructStarOrRepoField, fieldRequest } from '../utils.js'
+import {
+  destructPullRequest,
+  destructStarOrRepoField,
+  fieldRequest,
+} from './utils.js'
 
 // for cherrio
 export async function initFields(username: string) {
-  const octokit = new Octokit()
-  const { data } = await octokit.request(`GET /users/${username}`)
   return {
-    baseField() {
-      return data as BaseField
+    async userField() {
+      const users = await fieldRequest<BaseField>(
+        `https://api.github.com/users/${username}`,
+      )
+      return users
     },
     async followersField() {
-      const { followers_url } = data
-      const followers = await fieldRequest<Follow[]>(followers_url)
+      const followers = await fieldRequest<Follow[]>(
+        `https://api.github.com/users/${username}/followers`,
+      )
       return followers?.map((item) => ({
         id: item.id,
         user: item.login,
@@ -20,7 +25,6 @@ export async function initFields(username: string) {
       }))
     },
     async followingField() {
-      // const { following_url } = data
       const following = await fieldRequest<Follow[]>(
         `https://api.github.com/users/${username}/following`,
       )
@@ -31,19 +35,18 @@ export async function initFields(username: string) {
       }))
     },
     async starredField() {
-      // const { starred_url } = data
       const starred = await fieldRequest<Star[]>(
         `https://api.github.com/users/${username}/starred`,
       )
       return destructStarOrRepoField(starred)
     },
     async reposField() {
-      const { repos_url } = data
-      const repos = await fieldRequest<Repo[]>(repos_url)
+      const repos = await fieldRequest<Repo[]>(
+        `https://api.github.com/users/${username}/repos`,
+      )
       return destructStarOrRepoField(repos)
     },
     async eventsField() {
-      // const { events_url } = data
       const events = await fieldRequest<Event[]>(
         `https://api.github.com/users/${username}/events`,
       )

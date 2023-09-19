@@ -13,18 +13,12 @@
   },
   "exports": {
     ".": {
-      "types": "./index.d.ts",
+      "types": "./src/index.d.ts",
       "import": "./dist/index.js"
     }
   },
   "author": "Plumbiu",
   "license": "MIT",
-  "dependencies": {
-    "axios": "^1.5.0",
-    "cheerio": "1.0.0-rc.12",
-    "node-fetch": "^3.3.2",
-    "octokit": "^3.1.0"
-  },
   "devDependencies": {
     "@types/node": "^20.6.0",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
