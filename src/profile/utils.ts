@@ -36,7 +36,10 @@ interface User {
   [key: string]: any
 }
 
-function destructUser(user: User) {
+function destructUser(user: User | null) {
+  if (!user) {
+    return
+  }
   const { login: name, avatar_url: avatar, html_url: url } = user
   return {
     name,
@@ -60,8 +63,8 @@ export function destructPullRequest(pr: any) {
     updated_at: pr.updated_at,
     closed_at: pr.closed_at,
     merged_at: {
-      name: merged_by.login,
-      url: merged_by.html_url,
+      name: merged_by?.login,
+      url: merged_by?.html_url,
     },
     merged_by: destructUser(merged_by),
     comments: pr.comments,
