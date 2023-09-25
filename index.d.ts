@@ -30,27 +30,7 @@ declare module '@plumbiu/github-info' {
   type EventBase = Record<'id' | 'type' | 'created_at' | 'repo', string>
   type AvatarName = Record<'name' | 'avatar', string>
   type Commit = Record<'author' | 'message' | 'url', string>
-  type PullRequestBase = Record<
-    | 'html_url'
-    | 'diff_url'
-    | 'patch_url'
-    | 'issue_url'
-    | 'state'
-    | 'locked'
-    | 'title'
-    | 'body'
-    | 'created_at'
-    | 'updated_at'
-    | 'closed_at'
-    | 'merged_by'
-    | 'comments'
-    | 'additions'
-    | 'deletions'
-    | 'changed_files',
-    string
-  > & {
-    merged_at: string | undefined
-  }
+
   type PullRequestUser = Record<'name' | 'avatar' | 'url', string | undefined>
   type PullRequestBase = Record<'label' | 'ref', string | undefined> & {
     user: PullRequestUser
@@ -82,8 +62,8 @@ declare module '@plumbiu/github-info' {
     starred: PublicRepos[]
     events: Event[]
   }
-  export async function profileInfo(username: stirng): Promise<ReturnedType>
-  export async function initFields(username: string): Promise<{
+  export function profileInfo(username: string): Promise<ReturnedType>
+  export function initFields(username: string): Promise<{
     userField: () => Promise<User>
     followersField: () => Promise<Follow[]>
     followingField: () => Promise<Follow[]>
