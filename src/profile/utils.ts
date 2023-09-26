@@ -1,7 +1,9 @@
 import type { Repo, Star } from '../types/index.js'
 
 export async function fieldRequest<T>(url: string): Promise<T> {
-  const raw = await fetch(url)
+  const raw = await fetch(url, {
+    cache: 'force-cache',
+  })
   const data = await raw.json()
   return data as T
 }
