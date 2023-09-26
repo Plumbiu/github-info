@@ -55,7 +55,8 @@ declare module '@plumbiu/github-info' {
       base: PullRequestBase
     }
   }
-  type ReturnedType = User & {
+  interface ReturnedType {
+    user: User
     public_repos: PublicRepos[]
     followers: Follow[]
     following: Follow[]
