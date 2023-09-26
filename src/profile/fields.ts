@@ -9,10 +9,21 @@ import {
 export async function initFields(username: string) {
   return {
     async userField() {
-      const users = await fieldRequest<BaseField>(
+      const user = await fieldRequest<BaseField>(
         `https://api.github.com/users/${username}`,
       )
-      return users
+      return {
+        bio: user.bio,
+        name: user.login,
+        company: user.company,
+        blog: user.blog,
+        location: user.location,
+        email: user.email,
+        avatar: user.avatar_url,
+        twitter: user.twitter_username,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+      }
     },
     async followersField() {
       const followers = await fieldRequest<Follow[]>(

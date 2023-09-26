@@ -5,7 +5,7 @@ import { initFields } from './fields.js'
 */
 export async function profileInfo(username: string) {
   const {
-    userField: baseField,
+    userField,
     followersField,
     followingField,
     starredField,
@@ -13,19 +13,7 @@ export async function profileInfo(username: string) {
     eventsField,
   } = await initFields(username)
   // TODO: we can make every field into a function
-  const {
-    bio,
-    name,
-    company,
-    blog,
-    location,
-    email,
-    avatar_url: avatar,
-    twitter_username: twitter,
-    created_at,
-    updated_at,
-  } = await baseField()
-
+  const user = await userField()
   const followers = await followersField()
   const following = await followingField()
   const starred = await starredField()
@@ -36,16 +24,7 @@ export async function profileInfo(username: string) {
     TODO: sponsor, organizations,contributions,pinned
   */
   return {
-    name,
-    bio,
-    company,
-    blog,
-    location,
-    email,
-    avatar,
-    created_at,
-    updated_at,
-    twitter,
+    user,
     public_repos: repos,
     followers,
     following,
